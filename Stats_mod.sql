@@ -1,28 +1,5 @@
-drop database if exists ufc_project;
-create database if not exists ufc_project;
-use ufc_project;
-
-create table fighter(
-    fighter_name varchar(100) not null,
-    wins int,
-    losses int,
-    draws int,
-    style varchar(100),
-    primary key(fighter_name)
-);
-
-create table fight(
-    fight_id int auto_increment,
-    fighter1 varchar(100) not null,
-    fighter2 varchar(100) not null,
-    fight_card varchar(255) not null,
-    winner varchar(100),
-    method varchar(50),
-    end_round varchar(10),
-    primary key (fight_id),
-    foreign key (fighter1) references fighter(fighter_name) on delete cascade,
-    foreign key (fighter2) references fighter(fighter_name) on delete cascade
-);
+USE ufc_project;
+DROP TABLE IF EXISTS stats;
 
 create table stats(
     fight_id int not null,

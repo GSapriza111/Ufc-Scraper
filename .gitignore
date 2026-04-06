@@ -1,0 +1,11 @@
+# Python
+env/
+__pycache__/
+
+# Node
+node_modules/
+ufc-frontend/node_modules/
+ufc-backend/node_modules/
+
+# Environment Variables (for future-proofing)
+.env
