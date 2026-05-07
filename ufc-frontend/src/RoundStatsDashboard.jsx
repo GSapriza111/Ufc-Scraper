@@ -53,11 +53,11 @@ const MiniStatChart = ({ title, dataKey, data, color }) => (
   </div>
 );
 
-const RoundStatsDashboard = ({ fightHistory, statsHistory }) => {
+const RoundStatsDashboard = ({ fighterName, fightHistory, statsHistory }) => {
   const [selectedRound, setSelectedRound] = useState('1');
 
   const processedData = fightHistory.map((fight, index) => {
-    const stat = statsHistory.find(s => s.fight_id === fight.fight_id && s.rd === selectedRound);
+    const stat = statsHistory.find(s => s.fight_id === fight.fight_id && s.rd === selectedRound && s.fighter === fighterName);
 
     return {
       fightNum: index + 1,

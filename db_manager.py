@@ -1,5 +1,6 @@
 import mysql.connector
 import ufc_scraper
+from datetime import datetime
 
 # Database connection configuration
 DB_CONFIG = {
@@ -8,6 +9,10 @@ DB_CONFIG = {
     'password': 'Walruzlord111',    # Update this to match your MySQL password!
     'database': 'ufc_project'
 }
+def ParseDate(fightDate):
+    date_obj = datetime.strptime(fightDate, "%b. %d, %Y")
+    mysql_date = date_obj.strftime("%Y-%m-%d")
+    return mysql_date
 
 def connect_to_db():
     try:
@@ -68,7 +73,7 @@ def process_fight_data():
             continue
         
         gen_stats = fight_data[0]
-        fighterA, fighterB, event, winner, method, end_rd = gen_stats
+        fighterA, fighterB, event, winner, method, end_rd, fightDate = gen_stats
         
         existing_fight_id = check_fight_exists(cursor, fighterA, fighterB, event)
         
@@ -80,12 +85,13 @@ def process_fight_data():
         
         ensure_fighter_exists(cursor, fighterA)
         ensure_fighter_exists(cursor, fighterB)
+        fightDate = ParseDate(fightDate)
         
         insert_fight_query = """
-            INSERT INTO fight (fighter1, fighter2, fight_card, winner, method, end_round)
-            VALUES (%s, %s, %s, %s, %s, %s)
+            INSERT INTO fight (fighter1, fighter2, fight_card, winner, method, end_round, fightDate)
+            VALUES (%s, %s, %s, %s, %s, %s, %s)
         """
-        cursor.execute(insert_fight_query, (fighterA, fighterB, event, winner, method, end_rd))
+        cursor.execute(insert_fight_query, (fighterA, fighterB, event, winner, method, end_rd, fightDate))
         
         new_fight_id = cursor.lastrowid
         

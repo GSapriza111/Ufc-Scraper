@@ -7,6 +7,9 @@ create table fighter(
     wins int,
     losses int,
     draws int,
+    searched boolean default false,
+    created_at timestamp default current_timestamp,
+    updated_at timestamp default current_timestamp on update current_timestamp,
     style varchar(100),
     primary key(fighter_name)
 );
@@ -19,6 +22,7 @@ create table fight(
     winner varchar(100),
     method varchar(50),
     end_round varchar(10),
+    fightDate date,
     primary key (fight_id),
     foreign key (fighter1) references fighter(fighter_name) on delete cascade,
     foreign key (fighter2) references fighter(fighter_name) on delete cascade

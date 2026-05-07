@@ -3,20 +3,35 @@ import cors from 'cors';
 import mysql from 'mysql2/promise';
 import { spawn } from 'child_process';
 import path from 'path';
+import dbConfig from './dbconfig.js';
 
 const app = express();
 app.use(cors());
 
 // MySQL Connection details
-const dbConfig = {
-    host: 'localhost',
-    user: 'root',
-    password: 'Walruzlord111', // Update this!
-    database: 'ufc_project'
-};
 
 // The path to where your python scripts live
 const PYTHON_DIR = path.resolve('../'); 
+
+// Helper function to run the Python scraper
+const runScraper = (fighterName) => {
+    return new Promise((resolve, reject) => {
+        const pyProg = spawn('python', ['db_manager.py'], { cwd: PYTHON_DIR });
+
+        // Your python scripts ask for input() twice. We programmatically write to them here!
+        pyProg.stdin.write(`${fighterName}\n`); // Answers ufc_scraper.py
+        pyProg.stdin.write(`${fighterName}\n`); // Answers db_manager.py
+        pyProg.stdin.end();
+
+        pyProg.stdout.on('data', (data) => console.log(`Python: ${data.toString().trim()}`));
+        pyProg.stderr.on('data', (data) => console.error(`Python Error: ${data.toString()}`));
+
+        pyProg.on('close', (code) => {
+            if (code === 0) resolve();
+            else reject(new Error('Python script failed'));
+        });
+    });
+};
 
 app.get('/api/fighter/:name', async (req, res) => {
     const fighterName = req.params.name;
@@ -31,41 +46,41 @@ app.get('/api/fighter/:name', async (req, res) => {
             [fighterName]
         );
 
+        let scraped = false;
         if (fighterRows.length === 0) {
             console.log('Fighter not found in DB. Triggering Python Scraper...');
-            
-            // 2. Run the python script
-            await new Promise((resolve, reject) => {
-                const pyProg = spawn('python', ['db_manager.py'], { cwd: PYTHON_DIR });
-
-                // Your python scripts ask for input() twice. We programmatically write to them here!
-                pyProg.stdin.write(`${fighterName}\n`); // Answers ufc_scraper.py
-                pyProg.stdin.write(`${fighterName}\n`); // Answers db_manager.py
-                pyProg.stdin.end();
-
-                pyProg.stdout.on('data', (data) => console.log(`Python: ${data.toString().trim()}`));
-                pyProg.stderr.on('data', (data) => console.error(`Python Error: ${data.toString()}`));
-
-                pyProg.on('close', (code) => {
-                    if (code === 0) resolve();
-                    else reject(new Error('Python script failed'));
-                });
-            });
+            await runScraper(fighterName);
+            scraped = true;
             console.log('Scraping complete. Fetching new data...');
+        } else if (!fighterRows[0].searched) {
+            console.log('Fighter found but not fully searched. Triggering Python Scraper for missing data...');
+            await runScraper(fighterName);
+            scraped = true;
+            console.log('Additional scraping complete. Fetching new data...');
+        }
+
+        // Update searched status if we scraped
+        if (scraped) {
+            await connection.execute(
+                'UPDATE fighter SET searched = true WHERE fighter_name = ?',
+                [fighterName]
+            );
         }
 
         // 3. Retrieve all fights involving this fighter
         const [fightRows] = await connection.execute(`
             SELECT * FROM fight 
-            WHERE fighter1 = ? OR fighter2 = ?
-            ORDER BY fight_id ASC
+            WHERE fighter1 = ? OR fighter2 = ? 
+            ORDER BY fightDate ASC  -- Changed from fight_id ASC to fightDate ASC
         `, [fighterName, fighterName]);
 
         // 4. Retrieve all stats for this fighter
-        const [statRows] = await connection.execute(
-            'SELECT * FROM stats WHERE fighter = ?', 
-            [fighterName]
-        );
+        const [statRows] = await connection.execute(`
+            SELECT * FROM stats 
+            WHERE fight_id IN (
+                SELECT fight_id FROM fight WHERE fighter1 = ? OR fighter2 = ?
+            )
+        `, [fighterName, fighterName]);
 
         // 5. Format the overview data
         const chartData = fightRows.map(f => {
@@ -80,9 +95,10 @@ app.get('/api/fighter/:name', async (req, res) => {
                 opponent: opponent,
                 result: result,
                 method: f.method,
-                rounds: f.end_round
+                rounds: f.end_round,
+                fightDate: f.fightDate
             };
-        }).reverse(); 
+        }) 
 
         await connection.end();
         

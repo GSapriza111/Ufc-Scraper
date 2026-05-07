@@ -9,3 +9,5 @@ ufc-backend/node_modules/
 
 # Environment Variables (for future-proofing)
 .env
+
+ufc-backend/dbConfig.js

@@ -5,6 +5,7 @@ import { ScatterChart, Scatter, XAxis, YAxis, CartesianGrid, Tooltip, Responsive
 const FightTooltip = ({ active, payload }) => {
   if (active && payload && payload.length) {
     const fight = payload[0].payload;
+    console.log(fight)
     return (
       <div style={{ 
         backgroundColor: '#1e1e1e', 
@@ -24,6 +25,7 @@ const FightTooltip = ({ active, payload }) => {
         </p>
         <p style={{ margin: '3px 0', color: '#aaaaaa' }}>Method: <span style={{color: '#fff'}}>{fight.method}</span></p>
         <p style={{ margin: '3px 0', color: '#aaaaaa' }}>Rounds: <span style={{color: '#fff'}}>{fight.rounds}</span></p>
+        <p style={{ margin: '3px 0', color: '#aaaaaa' }}>Date: <span style={{color: '#fff'}}>{fight.fightDate ? new Date(fight.fightDate).toLocaleDateString() : 'N/A'}</span></p>
       </div>
     );
   }

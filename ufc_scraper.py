@@ -117,6 +117,8 @@ def startScript():
             print("----------------------------------")
             print(f"{opponent.strip()}: {fight['data-link']}")
             results = checkFight(fight['data-link'], name, fighter_url)
+            date = fight.find_all(class_ = "b-fight-details__table-col l-page_align_left")[1].find_all(class_ = "b-fight-details__table-text")[1].text
+            results[0].append(date.strip())
             print(results)
             history.append(results)
             print("!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
@@ -129,4 +131,4 @@ def startScript():
 
 
 if __name__ == "__main__":
-    print(startScript())
+    startScript()

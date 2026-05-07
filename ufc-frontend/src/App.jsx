@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import FighterHistoryGraph from './FighterHistoryGraph';
 import RoundStatsDashboard from './RoundStatsDashboard'; // Import the new component
+import GrapplingStatsDashboard from './GrapplingStatsDashboard';
 
 function App() {
   const [searchQuery, setSearchQuery] = useState('');
@@ -68,8 +69,13 @@ function App() {
               fighterName={fighterName} 
               fightHistory={dbData.fightHistory} 
             />
-            {/* The new dashboard drops in right here */}
             <RoundStatsDashboard 
+              fighterName={fighterName} // <--- Added!
+              fightHistory={dbData.fightHistory}
+              statsHistory={dbData.statsHistory}
+            />
+            <GrapplingStatsDashboard 
+              fighterName={fighterName} 
               fightHistory={dbData.fightHistory}
               statsHistory={dbData.statsHistory}
             />
