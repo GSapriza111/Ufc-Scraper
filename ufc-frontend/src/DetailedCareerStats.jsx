@@ -17,27 +17,31 @@ const statOptions = [
     { key: 'ctrl', label: 'Control Time (Seconds)' }
 ];
 
-const MultiFightTooltip = ({ active, payload, label }) => {
+const SimpleTooltip = ({ active, payload }) => {
   if (active && payload && payload.length) {
-    const validPayload = payload.filter(p => p.value !== null && p.value !== undefined);
-    const sorted = [...validPayload].sort((a, b) => b.value - a.value);
+    const data = payload[0].payload;
+    const dataKey = payload[0].dataKey;
+    const value = payload[0].value;
+    
+    if (!value || value === null) return null;
     
     return (
       <div style={{ 
-        backgroundColor: '#1e1e1e', padding: '10px', border: '1px solid #444', 
-        borderRadius: '6px', color: '#fff', zIndex: 1000, 
-        maxHeight: '250px', overflowY: 'auto', minWidth: '70px',
-        boxShadow: '0 4px 12px rgba(0,0,0,0.5)'
+        backgroundColor: '#1e1e1e', 
+        padding: '8px 12px', 
+        border: '1px solid #444', 
+        borderRadius: '4px', 
+        color: '#fff', 
+        zIndex: 1000,
+        boxShadow: '0 4px 12px rgba(0,0,0,0.5)',
+        fontSize: '12px'
       }}>
-        <h4 style={{ margin: '0 0 1px 0', borderBottom: '1px solid #333', paddingBottom: '1px', fontSize: '11px' }}>
-          Round {label}
-        </h4>
-        {sorted.map((p, i) => (
-          <div key={i} style={{ display: 'flex', justifyContent: 'space-between', margin: '2px 0', fontSize: '10px' }}>
-            <span style={{ color: p.color }}>{p.name}</span>
-            <span style={{ color: '#fff', fontWeight: 'bold', marginLeft: '15px' }}>{p.value}</span>
-          </div>
-        ))}
+        <p style={{ margin: '0 0 4px 0', fontWeight: 'bold', color: payload[0].color }}>
+          {data[`${dataKey}_opponent`] || 'N/A'}
+        </p>
+        <p style={{ margin: '0', color: '#aaa' }}>
+          Stat: <span style={{ color: '#fff', fontWeight: 'bold' }}>{value}</span>
+        </p>
       </div>
     );
   }
@@ -83,6 +87,7 @@ const DetailedCareerStats = ({ fighterName, fightHistory, statsHistory }) => {
             }
         }
         roundData[`fight_${index}`] = val;
+        roundData[`fight_${index}_opponent`] = fight.opponent; // Store opponent name
     });
 
     return roundData;
@@ -240,7 +245,6 @@ const DetailedCareerStats = ({ fighterName, fightHistory, statsHistory }) => {
                   <XAxis dataKey="round" tick={{ fill: '#888', fontSize: 14 }} axisLine={{ stroke: '#444' }} tickLine={false} />
                   <YAxis tick={{ fill: '#888', fontSize: 14 }} axisLine={false} tickLine={false} />
                   
-                  <Tooltip content={<MultiFightTooltip />} cursor={{ stroke: '#555', strokeWidth: 2, strokeDasharray: '5 5' }} />
                   
                   <Legend content={renderInteractiveLegend} verticalAlign="bottom" wrapperStyle={{ paddingTop: '10px' }} />
                   
