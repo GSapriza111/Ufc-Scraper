@@ -47,7 +47,7 @@ const MiniStatChart = ({ title, dataKey, data, color }) => (
         <XAxis dataKey="fightNum" tick={{ fill: '#666', fontSize: 10 }} axisLine={{ stroke: '#444' }} tickLine={false} />
         <YAxis tick={{ fill: '#666', fontSize: 10 }} axisLine={false} tickLine={false} />
         <Tooltip content={<StatTooltip />} cursor={{ stroke: '#444', strokeWidth: 2 }} />
-        <Line type="monotone" dataKey={`${dataKey}.thrown`} stroke={color} strokeWidth={2} dot={{ r: 3, fill: '#121212', strokeWidth: 2 }} activeDot={{ r: 5 }} />
+        <Line type="monotone" dataKey={`${dataKey}.landed`} stroke={color} strokeWidth={2} dot={{ r: 3, fill: '#121212', strokeWidth: 2 }} activeDot={{ r: 5 }} />
       </LineChart>
     </ResponsiveContainer>
   </div>

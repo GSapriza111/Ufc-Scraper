@@ -113,7 +113,7 @@ def process_fight_data():
                 except ValueError: return 0
 
             for r in range(num_rows):
-                rd_label = str(r)
+                rd_label = str(r+1)
                 
                 start_idx = r * 8
                 end_idx = start_idx + 8
