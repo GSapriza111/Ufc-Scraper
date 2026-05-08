@@ -39,7 +39,7 @@ def checkFight(fight_url, name, fighter_url):
         statistics.append([fighterA, fighterB, event, winner, method, rd])
         
 
-
+        #### THIS PART PARSES THE RD by RD stats
         for table in stat_tables:
             rows = table.find_all("tbody")
             new_table = []
@@ -51,10 +51,8 @@ def checkFight(fight_url, name, fighter_url):
                 while i < len(stats):
                     val1 = stats[i].text.strip()
                     val2 = stats[i+1].text.strip()
-
                     #### get rid of reduntant/calculable percentages
-
-                    if re.match(r".*%", val1) or re.match(r".*%", val2):
+                    if re.match(r".*%", val1) or re.match(r".*%", val2) or val1 == "---" or val2=="---":
                         i+=2
                         continue
 
@@ -123,12 +121,18 @@ def startScript():
             history.append(results)
             print("!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
         return history
-    ######## ADD SOMETHING LATER TO ADD RESULTS TO DB
-
-
     except requests.exceptions.RequestException as e:
         print(f"Request failed: {e}")
 
+"""history item should look like this:
+    [ 
+        [F1name, F2name, event, winner, method, round, date], 
+        [ [F1name, kd, sigstr, totalstr, td, sub, rev, ctrl], [F2name, kd, sigstr, totalstr, td, sub, rev, ctrl] ],
+        [ [F1name, sigstr, headstr, bodystr, legstr, dist, clinch, grd], [F2name, sigstr, headstr, bodystr, legstr, dist, clinch, grd] ] 
+    ]
+
+Note for elements 1,2 Stats go rd by rd from 1-finish
+"""
 
 if __name__ == "__main__":
     startScript()

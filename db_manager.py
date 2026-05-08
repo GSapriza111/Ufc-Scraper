@@ -113,8 +113,7 @@ def process_fight_data():
                 except ValueError: return 0
 
             for r in range(num_rows):
-                # This fixes the graph bug! Separates the 'Overall' row from the '1', '2', '3' rounds
-                rd_label = "Overall" if r == 0 else str(r)
+                rd_label = str(r)
                 
                 start_idx = r * 8
                 end_idx = start_idx + 8
@@ -138,7 +137,10 @@ def process_fight_data():
                         td = tot_chunk[4]
                         sub = safe_int(tot_chunk[5])
                         rev = safe_int(tot_chunk[6])
-                        ctrl = tot_chunk[7]
+                        if tot_chunk[7] == '--':
+                            ctrl = "0:00"
+                        else:
+                            ctrl = tot_chunk[7]
                         
                         if len(sig_chunk) == 8:
                             head = sig_chunk[2]
@@ -149,6 +151,7 @@ def process_fight_data():
                             ground = sig_chunk[7]
                         else:
                             head = body = leg = dist = clinch = ground = "0/0"
+                            
                             
                         insert_stats_query = """
                             INSERT INTO stats (fight_id, fighter, opponent, rd, kd, sig_str, total_str, td, sub, rev, ctrl, head_str, body_str, leg_str, distance_str, clinch_str, ground_str)
