@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import FighterHistoryGraph from './FighterHistoryGraph';
-import RoundStatsDashboard from './RoundStatsDashboard'; // Import the new component
+import DetailedCareerStats from './DetailedCareerStats'; // ADDED
+import RoundStatsDashboard from './RoundStatsDashboard';
 import GrapplingStatsDashboard from './GrapplingStatsDashboard';
 
 function App() {
@@ -69,8 +70,16 @@ function App() {
               fighterName={fighterName} 
               fightHistory={dbData.fightHistory} 
             />
+            
+            {/* The new section injected perfectly in the middle */}
+            <DetailedCareerStats
+              fighterName={fighterName} 
+              fightHistory={dbData.fightHistory}
+              statsHistory={dbData.statsHistory}
+            />
+
             <RoundStatsDashboard 
-              fighterName={fighterName} // <--- Added!
+              fighterName={fighterName} 
               fightHistory={dbData.fightHistory}
               statsHistory={dbData.statsHistory}
             />
