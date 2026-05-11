@@ -43,7 +43,7 @@ function App() {
     <div style={{ minHeight: '100vh', backgroundColor: '#0a0a0a', color: '#fff', padding: '40px', fontFamily: 'sans-serif' }}>
       <div style={{ maxWidth: '1200px', margin: '0 auto' }}>
         
-        <h1 style={{ textAlign: 'center', marginBottom: '30px' }}>UFC Stats Dashboard</h1>
+        <h1 style={{ textAlign: 'center', marginBottom: '30px', color: '#f00e0e' }}>Fighter Stats</h1>
         
         <form onSubmit={handleSearch} style={{ display: 'flex', justifyContent: 'center', marginBottom: '40px' }}>
           <input 

@@ -46,6 +46,8 @@ app.get('/api/fighter/:name', async (req, res) => {
             [fighterName]
         );
 
+        const currentTimestamp = new Date().toISOString().slice(0, 19).replace('T', ' ');
+
         let scraped = false;
         if (fighterRows.length === 0) {
             console.log('Fighter not found in DB. Triggering Python Scraper...');
@@ -57,6 +59,10 @@ app.get('/api/fighter/:name', async (req, res) => {
             await runScraper(fighterName);
             scraped = true;
             console.log('Additional scraping complete. Fetching new data...');
+        } else if (fighterRows[0].updated_at == new Date()- 7){
+            await runScraper(fighterName);
+            scraped = true;
+            console.log('Updated figher: ' + fighterName);
         }
 
         // Update searched status if we scraped
